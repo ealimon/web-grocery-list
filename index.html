@@ -54,7 +54,7 @@
             margin-bottom: 10px;
         }
         
-        /* 1. Strikethrough Effect */
+        /* Strikethrough Effect */
         .item-list input[type="checkbox"] {
             margin-right: 10px;
             cursor: pointer;
@@ -158,7 +158,7 @@
 <body>
 
 <div class="container">
-    <h1>🛒 Grocery List Builder V2</h1>
+    <h1>🛒 Grocery List Builder V3</h1>
 
     <div class="list-section">
         <h2>Popular Items (Check what you need)</h2>
@@ -185,11 +185,14 @@
 </div>
 
 <script>
+    // 💡 UPDATED LIST OF POPULAR ITEMS
     const POPULAR_ITEMS = [
         "Milk", "Eggs", "Bread", "Cheese", "Chicken Breast", "Ground Beef", "Potatoes",
-        "Onions", "Tomatoes", "Bananas", "Apples", "Oranges", "Cereal", "Coffee",
-        "Sugar", "Salt", "Pasta", "Rice", "Toilet Paper", "Paper Towels",
-        "Dish Soap", "Garbage Bags", "Yogurt", "Butter", "Limes/Lemons"
+        "Onions", "Tomatoes", "Bananas", "Apples", "Oranges", "Cereal", "Sugar",
+        "Salt", "Pasta", "Rice", "Toilet Paper", "Paper Towels", "Dish Soap",
+        "Garbage Bags", "Butter", "Limes/Lemons", 
+        // 👇 YOUR REQUESTED ITEMS ADDED HERE
+        "Yogurt", "Steak", "Blueberries", "Coffee"
     ];
 
     const popularList = document.getElementById('popular-items-list');
@@ -203,7 +206,7 @@
         attachEventListeners();
     });
 
-    // Generate HTML for the 25 popular items
+    // Generate HTML for the popular items
     function renderPopularItems() {
         popularList.innerHTML = '';
         const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
@@ -225,14 +228,15 @@
     
     // Load and render custom items from local storage
     function loadCustomItems() {
-        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || ["", "", ""]; // Start with a few empty inputs if none saved
+        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; // Start with one empty input if none saved
 
         customContainer.innerHTML = '';
-        if (savedCustom.length === 0) {
-            savedCustom.push(""); // Ensure at least one input if the user cleared everything
-        }
         
         savedCustom.forEach(value => addCustomItem(value));
+        // If local storage was empty, ensure one input exists
+        if (savedCustom.length === 0) {
+            addCustomItem();
+        }
     }
     
     // --- EVENT LISTENERS AND STORAGE HANDLERS ---
@@ -267,3 +271,96 @@
 
     function addCustomItem(value = '') {
         const row = document.createElement('div');
+        row.className = 'custom-item-row';
+        row.innerHTML = `
+            <input type="text" value="${value}" placeholder="Enter item name">
+        `;
+        
+        // Add a remove button for the custom item
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'X';
+        removeBtn.style.cssText = 'padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;';
+        removeBtn.onclick = () => {
+            row.remove();
+            saveCustomItems(); // Update local storage after removal
+        };
+        
+        row.appendChild(removeBtn);
+        customContainer.appendChild(row);
+        
+        if (value === '') {
+            row.querySelector('input').focus(); // Focus on the new input field
+        }
+    }
+    
+    // --- CLEAR AND EMAIL ACTIONS ---
+
+    function clearList() {
+        if (!confirm("Are you sure you want to clear the entire list (checkboxes and custom items)?")) {
+            return;
+        }
+
+        // 1. Clear popular items
+        popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        // 2. Clear custom items (reset to one empty input)
+        customContainer.innerHTML = '';
+        addCustomItem(); // Add one blank input field
+
+        // 3. Clear Local Storage for list items
+        localStorage.removeItem('popularChecks');
+        localStorage.removeItem('customItems');
+        
+        // Re-render to apply strikethrough updates (optional, as they refresh on their own)
+        savePopularItems(); 
+        saveCustomItems();
+        
+        alert('List cleared!');
+    }
+
+
+    function emailList() {
+        const emailInput = document.getElementById('email-recipient');
+        const recipient = emailInput.value.trim();
+
+        if (!recipient) {
+            alert('Please enter a recipient email address.');
+            emailInput.focus();
+            return;
+        }
+
+        // 1. Get Checked Popular Items
+        const popularItems = Array.from(popularList.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // 2. Get Custom Items
+        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
+            .map(input => input.value.trim())
+            .filter(item => item !== ''); // Filter out empty custom inputs
+
+        // 3. Combine and Format List
+        const allItems = [...popularItems, ...customItems];
+
+        if (allItems.length === 0) {
+            alert('Your list is empty! Please select or add some items before emailing.');
+            return;
+        }
+
+        // Format the list for the email body: use a numbered list
+        const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
+        
+        const emailSubject = 'My Weekly Grocery List';
+        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping!`;
+        
+        // Encode the subject and body for the mailto link
+        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        
+        // Open the user's default email client
+        window.location.href = mailtoLink;
+    }
+</script>
+
+</body>
+</html>
