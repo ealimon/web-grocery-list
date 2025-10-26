@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Grocery List</title>
+    <style>
+        /* Basic Reset and Setup */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* List Styling */
+        .list-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        h2 {
+            color: #555;
+            font-size: 1.2em;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        .item-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .item-list li {
+            margin-bottom: 10px;
+        }
+
+        .item-list input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        /* Custom Items Styling */
+        .custom-items input[type="text"] {
+            width: 95%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        /* Email and Button Styling */
+        .email-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .email-section input[type="email"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .email-section button {
+            width: 100%;
+            padding: 12px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .email-section button:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🛒 Grocery List Builder</h1>
+
+    <div class="list-section">
+        <h2>Popular Items (Check what you need)</h2>
+        <ul class="item-list" id="popular-items-list">
+            <li><label><input type="checkbox" value="Milk"> Milk</label></li>
+            <li><label><input type="checkbox" value="Eggs"> Eggs</label></li>
+            <li><label><input type="checkbox" value="Bread"> Bread</label></li>
+            <li><label><input type="checkbox" value="Cheese"> Cheese</label></li>
+            <li><label><input type="checkbox" value="Chicken Breast"> Chicken Breast</label></li>
+            <li><label><input type="checkbox" value="Ground Beef"> Ground Beef</label></li>
+            <li><label><input type="checkbox" value="Potatoes"> Potatoes</label></li>
+            <li><label><input type="checkbox" value="Onions"> Onions</label></li>
+            <li><label><input type="checkbox" value="Tomatoes"> Tomatoes</label></li>
+            <li><label><input type="checkbox" value="Bananas"> Bananas</label></li>
+            <li><label><input type="checkbox" value="Apples"> Apples</label></li>
+            <li><label><input type="checkbox" value="Oranges"> Oranges</label></li>
+            <li><label><input type="checkbox" value="Cereal"> Cereal</label></li>
+            <li><label><input type="checkbox" value="Coffee"> Coffee</label></li>
+            <li><label><input type="checkbox" value="Sugar"> Sugar</label></li>
+            <li><label><input type="checkbox" value="Salt"> Salt</label></li>
+            <li><label><input type="checkbox" value="Pasta"> Pasta</label></li>
+            <li><label><input type="checkbox" value="Rice"> Rice</label></li>
+            <li><label><input type="checkbox" value="Toilet Paper"> Toilet Paper</label></li>
+            <li><label><input type="checkbox" value="Paper Towels"> Paper Towels</label></li>
+            <li><label><input type="checkbox" value="Dish Soap"> Dish Soap</label></li>
+            <li><label><input type="checkbox" value="Garbage Bags"> Garbage Bags</label></li>
+            <li><label><input type="checkbox" value="Yogurt"> Yogurt</label></li>
+            <li><label><input type="checkbox" value="Butter"> Butter</label></li>
+            <li><label><input type="checkbox" value="Limes/Lemons"> Limes/Lemons</label></li>
+        </ul>
+    </div>
+
+    <div class="list-section custom-items">
+        <h2>Add Your Own Items (5 Max)</h2>
+        <input type="text" class="custom-item" placeholder="Item 1">
+        <input type="text" class="custom-item" placeholder="Item 2">
+        <input type="text" class="custom-item" placeholder="Item 3">
+        <input type="text" class="custom-item" placeholder="Item 4">
+        <input type="text" class="custom-item" placeholder="Item 5">
+    </div>
+
+    <div class="email-section">
+        <label for="email-recipient">Recipient Email Address:</label>
+        <input type="email" id="email-recipient" placeholder="name@example.com">
+
+        <button onclick="emailList()">📧 Email List</button>
+    </div>
+
+</div>
+
+<script>
+    function emailList() {
+        const emailInput = document.getElementById('email-recipient');
+        const recipient = emailInput.value.trim();
+
+        if (!recipient) {
+            alert('Please enter a recipient email address.');
+            emailInput.focus();
+            return;
+        }
+
+        // 1. Get Checked Popular Items
+        const popularItems = Array.from(document.querySelectorAll('#popular-items-list input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // 2. Get Custom Items
+        const customItems = Array.from(document.querySelectorAll('.custom-item'))
+            .map(input => input.value.trim())
+            .filter(item => item !== ''); // Filter out empty custom inputs
+
+        // 3. Combine and Format List
+        const allItems = [...popularItems, ...customItems];
+
+        if (allItems.length === 0) {
+            alert('Your list is empty! Please select or add some items.');
+            return;
+        }
+
+        // Format the list for the email body
+        const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
+        
+        const emailSubject = 'My Weekly Grocery List';
+        const emailBody = `Here is the grocery list I made:\n\n${listItemsText}\n\nHappy Shopping!`;
+        
+        // Encode the subject and body for the mailto link
+        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        
+        // Open the user's default email client
+        window.location.href = mailtoLink;
+        
+        // Optional: Alert for user feedback
+        // Note: This won't guarantee the email is sent, only that the client is opened.
+        alert(`Attempting to open your email client for ${recipient}.`);
+    }
+</script>
+
+</body>
+</html>
