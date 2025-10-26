@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Grocery List Builder</title>
+    <title>Mobile Grocery List Builder</title>
     <style>
         /* Basic Reset and Setup */
         body {
@@ -30,7 +30,7 @@
             margin-bottom: 20px;
         }
 
-        /* List Styling */
+        /* List Styling (Mobile Optimized) */
         .list-section {
             margin-bottom: 30px;
             padding: 15px;
@@ -50,14 +50,18 @@
             padding: 0;
         }
 
+        /* Large font and spacing for mobile tapping */
         .item-list li {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            font-size: 1.15em;
         }
         
-        /* Strikethrough Effect */
+        /* Strikethrough Effect and large checkbox */
         .item-list input[type="checkbox"] {
-            margin-right: 10px;
+            margin-right: 12px; 
+            transform: scale(1.2); 
             cursor: pointer;
+            vertical-align: middle;
         }
         
         .item-list input[type="checkbox"]:checked + span {
@@ -78,14 +82,26 @@
         
         .custom-item-row input[type="text"] {
             flex-grow: 1;
-            padding: 8px;
+            padding: 10px;
+            font-size: 1.1em;
             border: 1px solid #ccc;
             border-radius: 4px;
             margin-right: 10px;
         }
         
+        .custom-item-row button {
+            padding: 10px 15px;
+            font-size: 1em;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
         .add-item-btn {
-            padding: 8px 15px;
+            padding: 10px 15px;
+            font-size: 1.1em;
             background-color: #007bff;
             color: white;
             border: none;
@@ -99,12 +115,6 @@
         }
 
         /* Email, Clear, and Button Styling */
-        .action-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
         .email-section label {
             display: block;
             margin-bottom: 5px;
@@ -114,10 +124,30 @@
 
         .email-section input[type="email"] {
             width: 95%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 20px;
+            font-size: 1.1em;
             border: 1px solid #ccc;
             border-radius: 4px;
+        }
+
+        /* Amazon Link Button Styling */
+        #amazon-link-btn {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            padding: 14px;
+            margin-bottom: 15px; 
+            background-color: #ff9900; /* Amazon's color */
+            color: white;
+            border-radius: 4px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #amazon-link-btn:hover {
+            background-color: #e68a00;
         }
 
         .action-buttons {
@@ -128,16 +158,16 @@
         
         .action-buttons button {
             flex: 1;
-            padding: 12px;
+            padding: 14px;
             border: none;
             border-radius: 4px;
-            font-size: 1.0em;
+            font-size: 1.1em;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
         
         #email-list-btn {
-            background-color: #5cb85c; /* Green */
+            background-color: #5cb85c;
             color: white;
         }
 
@@ -146,7 +176,7 @@
         }
 
         #clear-list-btn {
-            background-color: #f0ad4e; /* Orange */
+            background-color: #f0ad4e;
             color: white;
         }
         
@@ -158,7 +188,7 @@
 <body>
 
 <div class="container">
-    <h1>🛒 Grocery List Builder V3</h1>
+    <h1>🛒 Mobile Grocery List</h1>
 
     <div class="list-section">
         <h2>Popular Items (Check what you need)</h2>
@@ -177,6 +207,10 @@
         <label for="email-recipient">Recipient Email Address:</label>
         <input type="email" id="email-recipient" placeholder="name@example.com">
 
+        <a id="amazon-link-btn" href="https://amzn.to/479D0aJ" target="_blank" role="button">
+            🛒 Shop Amazon Groceries
+        </a>
+
         <div class="action-buttons">
             <button id="email-list-btn" onclick="emailList()">📧 Email List</button>
             <button id="clear-list-btn" onclick="clearList()">🔄 Clear List</button>
@@ -185,13 +219,12 @@
 </div>
 
 <script>
-    // 💡 UPDATED LIST OF POPULAR ITEMS
+    // LIST OF POPULAR ITEMS
     const POPULAR_ITEMS = [
         "Milk", "Eggs", "Bread", "Cheese", "Chicken Breast", "Ground Beef", "Potatoes",
         "Onions", "Tomatoes", "Bananas", "Apples", "Oranges", "Cereal", "Sugar",
         "Salt", "Pasta", "Rice", "Toilet Paper", "Paper Towels", "Dish Soap",
         "Garbage Bags", "Butter", "Limes/Lemons", 
-        // 👇 YOUR REQUESTED ITEMS ADDED HERE
         "Yogurt", "Steak", "Blueberries", "Coffee"
     ];
 
@@ -279,7 +312,6 @@
         // Add a remove button for the custom item
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'X';
-        removeBtn.style.cssText = 'padding: 8px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;';
         removeBtn.onclick = () => {
             row.remove();
             saveCustomItems(); // Update local storage after removal
@@ -313,7 +345,6 @@
         localStorage.removeItem('popularChecks');
         localStorage.removeItem('customItems');
         
-        // Re-render to apply strikethrough updates (optional, as they refresh on their own)
         savePopularItems(); 
         saveCustomItems();
         
