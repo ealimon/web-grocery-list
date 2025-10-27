@@ -38,16 +38,20 @@
             border-radius: 6px;
         }
 
-        h2 {
-            color: #555;
-            font-size: 1.2em;
-            margin-top: 0;
-            margin-bottom: 15px;
+        /* Category Header Styling */
+        .category-header {
+            color: #1a73e8; /* A clear blue to distinguish from the main heading */
+            font-size: 1.15em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .item-list {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
 
         /* Large font and spacing for mobile tapping */
@@ -131,7 +135,6 @@
             border-radius: 4px;
         }
 
-        /* Group the Email and Clear buttons together */
         .action-buttons {
             display: flex;
             justify-content: space-between;
@@ -167,7 +170,6 @@
             background-color: #ec971f;
         }
         
-        /* Amazon Link Button Styling */
         #amazon-link-btn {
             display: block;
             text-align: center;
@@ -189,12 +191,12 @@
 <body>
 
 <div class="container">
-    <h1>🛒 Mobile Grocery List</h1> 
+    <h1>🛒 My Grocery List</h1> 
 
     <div class="list-section">
         <h2>Popular Items (Check what you need)</h2>
-        <ul class="item-list" id="popular-items-list">
-            </ul>
+        <div id="popular-items-list">
+            </div>
     </div>
 
     <div class="list-section">
@@ -220,16 +222,45 @@
 </div>
 
 <script>
-    // LIST OF POPULAR ITEMS WITH EMOJIS (Sorted when rendered)
+    // 💡 UPDATED DATA STRUCTURE FOR CATEGORIZATION
     const POPULAR_ITEMS = [
-        "Milk 🥛", "Eggs 🥚", "Bread 🍞", "Cheese", "Chicken Breast", "Steak 🥩", "Ground Beef", "Potatoes",
-        "Onions", "Tomatoes", "Bananas 🍌", "Apples", "Oranges", "Blueberries", "Yogurt", "Cereal", "Coffee ☕", "Sugar",
-        "Salt", "Pasta", "Rice", "Toilet Paper", "Paper Towels", "Dish Soap",
-        "Garbage Bags", "Butter", "Limes/Lemons"
+        { name: "Apples", category: "Produce" },
+        { name: "Bananas 🍌", category: "Produce" },
+        { name: "Blueberries", category: "Produce" },
+        { name: "Limes/Lemons", category: "Produce" },
+        { name: "Onions", category: "Produce" },
+        { name: "Potatoes", category: "Produce" },
+        { name: "Tomatoes", category: "Produce" },
+        { name: "Oranges", category: "Produce" },
+        
+        { name: "Butter", category: "Dairy/Refrigerated" },
+        { name: "Cheese", category: "Dairy/Refrigerated" },
+        { name: "Eggs 🥚", category: "Dairy/Refrigerated" },
+        { name: "Milk 🥛", category: "Dairy/Refrigerated" },
+        { name: "Yogurt", category: "Dairy/Refrigerated" },
+
+        { name: "Chicken Breast", category: "Meat/Seafood" },
+        { name: "Ground Beef", category: "Meat/Seafood" },
+        { name: "Steak 🥩", category: "Meat/Seafood" },
+        
+        { name: "Bread 🍞", category: "Bakery/Cereal" },
+        { name: "Cereal", category: "Bakery/Cereal" },
+
+        { name: "Coffee ☕", category: "Pantry" },
+        { name: "Pasta", category: "Pantry" },
+        { name: "Rice", category: "Pantry" },
+        { name: "Salt", category: "Pantry" },
+        { name: "Sugar", category: "Pantry" },
+
+        { name: "Dish Soap", category: "Household/Other" },
+        { name: "Garbage Bags", category: "Household/Other" },
+        { name: "Paper Towels", category: "Household/Other" },
+        { name: "Toilet Paper", category: "Household/Other" }
     ];
 
-    const popularList = document.getElementById('popular-items-list');
+    const popularListContainer = document.getElementById('popular-items-list');
     const customContainer = document.getElementById('custom-items-container');
+    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     // --- INITIALIZATION AND LOCAL STORAGE ---
 
@@ -239,154 +270,56 @@
         attachEventListeners();
     });
 
-    // Generate HTML for the popular items
+    // Helper to strip emojis and trim for clean comparison/sorting
+    const cleanName = (s) => s.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
+
+    // Generate HTML for the popular items, grouped by category
     function renderPopularItems() {
-        popularList.innerHTML = '';
+        popularListContainer.innerHTML = '';
         const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
 
-        // ALPHABETICAL SORTING 
-        const sortedItems = [...POPULAR_ITEMS].sort((a, b) => {
-            const cleanString = (s) => s.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim().toLowerCase();
-            return cleanString(a).localeCompare(cleanString(b));
-        });
+        // 1. Group items by category
+        const categorizedItems = POPULAR_ITEMS.reduce((acc, item) => {
+            acc[item.category] = acc[item.category] || [];
+            acc[item.category].push(item);
+            return acc;
+        }, {});
 
-        sortedItems.forEach(item => {
-            const cleanItem = item.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
-            const id = `item-${cleanItem.replace(/\s/g, '-')}`;
-            const isChecked = savedChecks[cleanItem] ? 'checked' : '';
-            
-            const li = document.createElement('li');
-            li.innerHTML = `
-                <label>
-                    <input type="checkbox" id="${id}" value="${cleanItem}" ${isChecked}>
-                    <span>${item}</span>
-                </label>
-            `;
-            popularList.appendChild(li);
+        // 2. Sort categories alphabetically
+        const sortedCategories = Object.keys(categorizedItems).sort();
+
+        // 3. Render
+        sortedCategories.forEach(category => {
+            // Create Category Header
+            const header = document.createElement('h3');
+            header.className = 'category-header';
+            header.textContent = category;
+            popularListContainer.appendChild(header);
+
+            const ul = document.createElement('ul');
+            ul.className = 'item-list';
+
+            // Sort items within each category alphabetically
+            categorizedItems[category].sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name)));
+
+            categorizedItems[category].forEach(item => {
+                const itemCleanName = cleanName(item.name);
+                const id = `item-${itemCleanName.replace(/\s/g, '-')}`;
+                const isChecked = savedChecks[itemCleanName] ? 'checked' : '';
+                
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <label>
+                        <input type="checkbox" id="${id}" value="${itemCleanName}" ${isChecked}>
+                        <span>${item.name}</span>
+                    </label>
+                `;
+                ul.appendChild(li);
+            });
+            popularListContainer.appendChild(ul);
         });
     }
     
     // Load and render custom items from local storage
     function loadCustomItems() {
-        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; 
-
-        customContainer.innerHTML = '';
-        
-        savedCustom.forEach(value => addCustomItem(value));
-        if (savedCustom.length === 0) {
-            addCustomItem();
-        }
-    }
-    
-    // --- EVENT LISTENERS AND STORAGE HANDLERS ---
-    
-    function attachEventListeners() {
-        popularList.addEventListener('change', (event) => {
-            if (event.target.type === 'checkbox') {
-                savePopularItems();
-            }
-        });
-
-        customContainer.addEventListener('input', saveCustomItems);
-    }
-    
-    function savePopularItems() {
-        const checks = {};
-        popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checks[checkbox.value] = checkbox.checked;
-        });
-        localStorage.setItem('popularChecks', JSON.stringify(checks));
-    }
-    
-    function saveCustomItems() {
-        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
-            .map(input => input.value.trim());
-        localStorage.setItem('customItems', JSON.stringify(customItems));
-    }
-
-    // --- DYNAMIC CUSTOM ITEM FUNCTIONALITY ---
-
-    function addCustomItem(value = '') {
-        const row = document.createElement('div');
-        row.className = 'custom-item-row';
-        row.innerHTML = `
-            <input type="text" value="${value}" placeholder="Enter item name">
-        `;
-        
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'X';
-        removeBtn.onclick = () => {
-            row.remove();
-            saveCustomItems();
-        };
-        
-        row.appendChild(removeBtn);
-        customContainer.appendChild(row);
-        
-        if (value === '') {
-            row.querySelector('input').focus();
-        }
-    }
-    
-    // --- CLEAR AND EMAIL ACTIONS ---
-
-    function clearList() {
-        if (!confirm("Are you sure you want to clear the entire list (checkboxes and custom items)?")) {
-            return;
-        }
-
-        popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        
-        customContainer.innerHTML = '';
-        addCustomItem();
-
-        localStorage.removeItem('popularChecks');
-        localStorage.removeItem('customItems');
-        
-        savePopularItems(); 
-        saveCustomItems();
-        
-        alert('List cleared!');
-    }
-
-
-    function emailList() {
-        const emailInput = document.getElementById('email-recipient');
-        const recipient = emailInput.value.trim();
-
-        if (!recipient) {
-            alert('Please enter a recipient email address.');
-            emailInput.focus();
-            return;
-        }
-
-        const popularItems = Array.from(popularList.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
-
-        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
-            .map(input => input.value.trim())
-            .filter(item => item !== '');
-
-        const allItems = [...popularItems, ...customItems];
-
-        if (allItems.length === 0) {
-            alert('Your list is empty! Please select or add some items before emailing.');
-            return;
-        }
-
-        const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
-        
-        const emailSubject = 'My Weekly Grocery List';
-        // 💡 ADDED HEART EMOJI TO EMAIL BODY
-        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping! ❤️`;
-        
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        
-        window.location.href = mailtoLink;
-    }
-</script>
-
-</body>
-</html>
+        const savedCustom = JSON.parse(localStorage.getItem
