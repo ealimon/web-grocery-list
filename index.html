@@ -131,29 +131,12 @@
             border-radius: 4px;
         }
 
-        /* Amazon Link Button Styling */
-        #amazon-link-btn {
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            padding: 14px;
-            margin-bottom: 15px; 
-            background-color: #ff9900; /* Amazon's color */
-            color: white;
-            border-radius: 4px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #amazon-link-btn:hover {
-            background-color: #e68a00;
-        }
-
+        /* Group the Email and Clear buttons together */
         .action-buttons {
             display: flex;
             justify-content: space-between;
             gap: 10px;
+            margin-bottom: 15px; /* Added margin here */
         }
         
         .action-buttons button {
@@ -183,6 +166,24 @@
         #clear-list-btn:hover {
             background-color: #ec971f;
         }
+        
+        /* Amazon Link Button Styling - Moved below action buttons */
+        #amazon-link-btn {
+            display: block;
+            text-align: center;
+            text-decoration: none;
+            padding: 14px;
+            background-color: #ff9900; /* Amazon's color */
+            color: white;
+            border-radius: 4px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #amazon-link-btn:hover {
+            background-color: #e68a00;
+        }
     </style>
 </head>
 <body>
@@ -207,25 +208,24 @@
         <label for="email-recipient">Recipient Email Address:</label>
         <input type="email" id="email-recipient" placeholder="name@example.com">
 
+        <div class="action-buttons">
+            <button id="email-list-btn" onclick="emailList()">📧 Email Grocery List</button>
+            <button id="clear-list-btn" onclick="clearList()">🔄 Clear List</button>
+        </div>
+
         <a id="amazon-link-btn" href="https://amzn.to/479D0aJ" target="_blank" role="button">
             🛒 Shop Amazon Groceries
         </a>
-
-        <div class="action-buttons">
-            <button id="email-list-btn" onclick="emailList()">📧 Email List</button>
-            <button id="clear-list-btn" onclick="clearList()">🔄 Clear List</button>
-        </div>
     </div>
 </div>
 
 <script>
-    // LIST OF POPULAR ITEMS
+    // LIST OF POPULAR ITEMS WITH EMOJIS
     const POPULAR_ITEMS = [
-        "Milk", "Eggs", "Bread", "Cheese", "Chicken Breast", "Ground Beef", "Potatoes",
-        "Onions", "Tomatoes", "Bananas", "Apples", "Oranges", "Cereal", "Sugar",
+        "Milk 🥛", "Eggs 🥚", "Bread 🍞", "Cheese", "Chicken Breast", "Steak 🥩", "Ground Beef", "Potatoes",
+        "Onions", "Tomatoes", "Bananas 🍌", "Apples", "Oranges", "Blueberries", "Yogurt", "Cereal", "Coffee ☕", "Sugar",
         "Salt", "Pasta", "Rice", "Toilet Paper", "Paper Towels", "Dish Soap",
-        "Garbage Bags", "Butter", "Limes/Lemons", 
-        "Yogurt", "Steak", "Blueberries", "Coffee"
+        "Garbage Bags", "Butter", "Limes/Lemons"
     ];
 
     const popularList = document.getElementById('popular-items-list');
@@ -245,13 +245,15 @@
         const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
 
         POPULAR_ITEMS.forEach(item => {
-            const id = `item-${item.replace(/\s/g, '-')}`;
-            const isChecked = savedChecks[item] ? 'checked' : '';
+            // Remove emojis before creating the ID and saving the value
+            const cleanItem = item.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
+            const id = `item-${cleanItem.replace(/\s/g, '-')}`;
+            const isChecked = savedChecks[cleanItem] ? 'checked' : '';
             
             const li = document.createElement('li');
             li.innerHTML = `
                 <label>
-                    <input type="checkbox" id="${id}" value="${item}" ${isChecked}>
+                    <input type="checkbox" id="${id}" value="${cleanItem}" ${isChecked}>
                     <span>${item}</span>
                 </label>
             `;
@@ -261,12 +263,11 @@
     
     // Load and render custom items from local storage
     function loadCustomItems() {
-        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; // Start with one empty input if none saved
+        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; 
 
         customContainer.innerHTML = '';
         
         savedCustom.forEach(value => addCustomItem(value));
-        // If local storage was empty, ensure one input exists
         if (savedCustom.length === 0) {
             addCustomItem();
         }
@@ -289,6 +290,7 @@
     function savePopularItems() {
         const checks = {};
         popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            // Use the clean value saved in the checkbox's 'value' attribute
             checks[checkbox.value] = checkbox.checked;
         });
         localStorage.setItem('popularChecks', JSON.stringify(checks));
@@ -309,19 +311,18 @@
             <input type="text" value="${value}" placeholder="Enter item name">
         `;
         
-        // Add a remove button for the custom item
         const removeBtn = document.createElement('button');
         removeBtn.textContent = 'X';
         removeBtn.onclick = () => {
             row.remove();
-            saveCustomItems(); // Update local storage after removal
+            saveCustomItems();
         };
         
         row.appendChild(removeBtn);
         customContainer.appendChild(row);
         
         if (value === '') {
-            row.querySelector('input').focus(); // Focus on the new input field
+            row.querySelector('input').focus();
         }
     }
     
@@ -332,16 +333,13 @@
             return;
         }
 
-        // 1. Clear popular items
         popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
             checkbox.checked = false;
         });
         
-        // 2. Clear custom items (reset to one empty input)
         customContainer.innerHTML = '';
-        addCustomItem(); // Add one blank input field
+        addCustomItem();
 
-        // 3. Clear Local Storage for list items
         localStorage.removeItem('popularChecks');
         localStorage.removeItem('customItems');
         
@@ -362,14 +360,14 @@
             return;
         }
 
-        // 1. Get Checked Popular Items
+        // 1. Get Checked Popular Items (using the clean value without emojis)
         const popularItems = Array.from(popularList.querySelectorAll('input[type="checkbox"]:checked'))
             .map(checkbox => checkbox.value);
 
         // 2. Get Custom Items
         const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
             .map(input => input.value.trim())
-            .filter(item => item !== ''); // Filter out empty custom inputs
+            .filter(item => item !== '');
 
         // 3. Combine and Format List
         const allItems = [...popularItems, ...customItems];
@@ -385,10 +383,8 @@
         const emailSubject = 'My Weekly Grocery List';
         const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping!`;
         
-        // Encode the subject and body for the mailto link
         const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         
-        // Open the user's default email client
         window.location.href = mailtoLink;
     }
 </script>
