@@ -322,4 +322,130 @@
     
     // Load and render custom items from local storage
     function loadCustomItems() {
-        const savedCustom = JSON.parse(localStorage.getItem
+        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; 
+
+        customContainer.innerHTML = '';
+        
+        savedCustom.forEach(value => addCustomItem(value, false)); // Don't autofocus on load
+        if (savedCustom.length === 0) {
+            addCustomItem();
+        }
+    }
+    
+    // --- EVENT LISTENERS AND STORAGE HANDLERS ---
+    
+    function attachEventListeners() {
+        popularListContainer.addEventListener('change', (event) => {
+            if (event.target.type === 'checkbox') {
+                savePopularItems();
+            }
+        });
+
+        customContainer.addEventListener('input', saveCustomItems);
+    }
+    
+    function savePopularItems() {
+        const checks = {};
+        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checks[checkbox.value] = checkbox.checked;
+        });
+        localStorage.setItem('popularChecks', JSON.stringify(checks));
+    }
+    
+    function saveCustomItems() {
+        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
+            .map(input => input.value.trim());
+        localStorage.setItem('customItems', JSON.stringify(customItems));
+    }
+
+    // --- DYNAMIC CUSTOM ITEM FUNCTIONALITY ---
+
+    // 💡 IMPLEMENTED AUTOFOCUS FEATURE
+    function addCustomItem(value = '', autofocus = true) {
+        const row = document.createElement('div');
+        row.className = 'custom-item-row';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = value;
+        input.placeholder = "Enter item name";
+        row.appendChild(input);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = 'X';
+        removeBtn.onclick = () => {
+            row.remove();
+            saveCustomItems();
+        };
+        
+        row.appendChild(removeBtn);
+        customContainer.appendChild(row);
+        
+        if (autofocus && value === '') {
+            input.focus(); // Autofocus on the new, empty input field
+        }
+    }
+    
+    // --- CLEAR AND EMAIL ACTIONS ---
+
+    function clearList() {
+        if (!confirm("Are you sure you want to clear the entire list (checkboxes and custom items)?")) {
+            return;
+        }
+
+        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        
+        customContainer.innerHTML = '';
+        addCustomItem();
+
+        localStorage.removeItem('popularChecks');
+        localStorage.removeItem('customItems');
+        
+        savePopularItems(); 
+        saveCustomItems();
+        
+        alert('List cleared!');
+    }
+
+
+    function emailList() {
+        const emailInput = document.getElementById('email-recipient');
+        const recipient = emailInput.value.trim();
+
+        // 💡 IMPLEMENTED EMAIL VALIDATION
+        if (!recipient || !EMAIL_REGEX.test(recipient)) {
+            alert('Please enter a valid email address (e.g., name@example.com).');
+            emailInput.focus();
+            return;
+        }
+
+        const popularItems = Array.from(popularListContainer.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
+            .map(input => input.value.trim())
+            .filter(item => item !== '');
+
+        const allItems = [...popularItems, ...customItems];
+
+        if (allItems.length === 0) {
+            alert('Your list is empty! Please select or add some items before emailing.');
+            return;
+        }
+
+        const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
+        
+        const emailSubject = 'My Weekly Grocery List';
+        // 💡 HEART EMOJI ADDED
+        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping! ❤️`;
+        
+        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+        
+        window.location.href = mailtoLink;
+    }
+</script>
+
+</body>
+</html>
