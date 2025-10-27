@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobile Grocery List Builder</title>
+    <title>My Grocery List</title>
     <style>
         /* Basic Reset and Setup */
         body {
@@ -136,7 +136,7 @@
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            margin-bottom: 15px; /* Added margin here */
+            margin-bottom: 15px; 
         }
         
         .action-buttons button {
@@ -167,13 +167,13 @@
             background-color: #ec971f;
         }
         
-        /* Amazon Link Button Styling - Moved below action buttons */
+        /* Amazon Link Button Styling */
         #amazon-link-btn {
             display: block;
             text-align: center;
             text-decoration: none;
             padding: 14px;
-            background-color: #ff9900; /* Amazon's color */
+            background-color: #ff9900; 
             color: white;
             border-radius: 4px;
             font-size: 1.1em;
@@ -189,7 +189,7 @@
 <body>
 
 <div class="container">
-    <h1>🛒 Mobile Grocery List</h1>
+    <h1>🛒 Mobile Grocery List</h1> 
 
     <div class="list-section">
         <h2>Popular Items (Check what you need)</h2>
@@ -220,7 +220,7 @@
 </div>
 
 <script>
-    // LIST OF POPULAR ITEMS WITH EMOJIS
+    // LIST OF POPULAR ITEMS WITH EMOJIS (Sorted when rendered)
     const POPULAR_ITEMS = [
         "Milk 🥛", "Eggs 🥚", "Bread 🍞", "Cheese", "Chicken Breast", "Steak 🥩", "Ground Beef", "Potatoes",
         "Onions", "Tomatoes", "Bananas 🍌", "Apples", "Oranges", "Blueberries", "Yogurt", "Cereal", "Coffee ☕", "Sugar",
@@ -244,8 +244,13 @@
         popularList.innerHTML = '';
         const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
 
-        POPULAR_ITEMS.forEach(item => {
-            // Remove emojis before creating the ID and saving the value
+        // ALPHABETICAL SORTING 
+        const sortedItems = [...POPULAR_ITEMS].sort((a, b) => {
+            const cleanString = (s) => s.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim().toLowerCase();
+            return cleanString(a).localeCompare(cleanString(b));
+        });
+
+        sortedItems.forEach(item => {
             const cleanItem = item.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
             const id = `item-${cleanItem.replace(/\s/g, '-')}`;
             const isChecked = savedChecks[cleanItem] ? 'checked' : '';
@@ -276,21 +281,18 @@
     // --- EVENT LISTENERS AND STORAGE HANDLERS ---
     
     function attachEventListeners() {
-        // Listen for changes in the popular list checkboxes to save state
         popularList.addEventListener('change', (event) => {
             if (event.target.type === 'checkbox') {
                 savePopularItems();
             }
         });
 
-        // Listen for input changes in the custom container to save state
         customContainer.addEventListener('input', saveCustomItems);
     }
     
     function savePopularItems() {
         const checks = {};
         popularList.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            // Use the clean value saved in the checkbox's 'value' attribute
             checks[checkbox.value] = checkbox.checked;
         });
         localStorage.setItem('popularChecks', JSON.stringify(checks));
@@ -360,16 +362,13 @@
             return;
         }
 
-        // 1. Get Checked Popular Items (using the clean value without emojis)
         const popularItems = Array.from(popularList.querySelectorAll('input[type="checkbox"]:checked'))
             .map(checkbox => checkbox.value);
 
-        // 2. Get Custom Items
         const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
             .map(input => input.value.trim())
             .filter(item => item !== '');
 
-        // 3. Combine and Format List
         const allItems = [...popularItems, ...customItems];
 
         if (allItems.length === 0) {
@@ -377,11 +376,11 @@
             return;
         }
 
-        // Format the list for the email body: use a numbered list
         const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
         
         const emailSubject = 'My Weekly Grocery List';
-        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping!`;
+        // 💡 ADDED HEART EMOJI TO EMAIL BODY
+        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping! ❤️`;
         
         const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
         
