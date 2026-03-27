@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Grocery List</title>
     <style>
-        /* Basic Reset and Setup */
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f9;
+            color: #333;
         }
 
         .container {
@@ -18,34 +18,31 @@
             margin: 0 auto;
             background-color: #ffffff;
             padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
         }
 
         h1 {
-            color: #333;
             text-align: center;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 1.8em;
         }
 
-        /* List Styling (Mobile Optimized) */
         .list-section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
         }
 
-        /* Category Header Styling */
         .category-header {
-            color: #1a73e8; /* A clear blue to distinguish from the main heading */
-            font-size: 1.15em;
-            margin-top: 20px;
-            margin-bottom: 10px;
+            color: #1a73e8;
+            font-size: 1.1em;
+            margin: 15px 0 10px 0;
             padding-bottom: 5px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 2px solid #f0f4f8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .item-list {
@@ -54,137 +51,79 @@
             margin: 0;
         }
 
-        /* Large font and spacing for mobile tapping */
         .item-list li {
-            margin-bottom: 15px;
-            font-size: 1.15em;
-        }
-        
-        /* Strikethrough Effect and large checkbox */
-        .item-list input[type="checkbox"] {
-            margin-right: 12px; 
-            transform: scale(1.2); 
-            cursor: pointer;
-            vertical-align: middle;
-        }
-        
-        .item-list input[type="checkbox"]:checked + span {
-            text-decoration: line-through;
-            color: #888;
-        }
-
-        /* Custom Items Styling */
-        #custom-items-container {
-            margin-bottom: 10px;
-        }
-        
-        .custom-item-row {
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            margin-bottom: 10px;
+        }
+        
+        .item-list input[type="checkbox"] {
+            margin-right: 15px; 
+            transform: scale(1.4); 
+            cursor: pointer;
+        }
+
+        /* 💡 Clean Readability: No Strikethrough, just a subtle color change */
+        .item-list input[type="checkbox"]:checked + span {
+            color: #1a73e8;
+            font-weight: 600;
+        }
+
+        .item-list span {
+            font-size: 1.2em;
+        }
+
+        .custom-item-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
         }
         
         .custom-item-row input[type="text"] {
             flex-grow: 1;
-            padding: 10px;
+            padding: 12px;
             font-size: 1.1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            margin-right: 10px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .custom-item-row input[type="text"]:focus {
+            border-color: #1a73e8;
         }
         
-        .custom-item-row button {
+        .remove-btn {
             padding: 10px 15px;
-            font-size: 1em;
-            background-color: #dc3545;
-            color: white;
+            background-color: #ffeded;
+            color: #dc3545;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
+            font-weight: bold;
             cursor: pointer;
         }
         
         .add-item-btn {
-            padding: 10px 15px;
+            width: 100%;
+            padding: 15px;
             font-size: 1.1em;
-            background-color: #007bff;
+            background-color: #1a73e8;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .add-item-btn:hover {
-            background-color: #0056b3;
-        }
-
-        /* Email, Clear, and Button Styling */
-        .email-section label {
-            display: block;
-            margin-bottom: 5px;
             font-weight: bold;
-            color: #333;
         }
 
-        .email-section input[type="email"] {
-            width: 95%;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 1.1em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            margin-bottom: 15px; 
-        }
-        
-        .action-buttons button {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 4px;
-            font-size: 1.1em;
+        .clear-btn {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: transparent;
+            color: #888;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            font-size: 1em;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        #email-list-btn {
-            background-color: #5cb85c;
-            color: white;
-        }
-
-        #email-list-btn:hover {
-            background-color: #4cae4c;
-        }
-
-        #clear-list-btn {
-            background-color: #f0ad4e;
-            color: white;
-        }
-        
-        #clear-list-btn:hover {
-            background-color: #ec971f;
-        }
-        
-        #amazon-link-btn {
-            display: block;
-            text-align: center;
-            text-decoration: none;
-            padding: 14px;
-            background-color: #ff9900; 
-            color: white;
-            border-radius: 4px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        #amazon-link-btn:hover {
-            background-color: #e68a00;
         }
     </style>
 </head>
@@ -194,35 +133,19 @@
     <h1>🛒 My Grocery List</h1> 
 
     <div class="list-section">
-        <h2>Popular Items (Check what you need)</h2>
-        <div id="popular-items-list">
-            </div>
+        <div id="popular-items-list"></div>
     </div>
 
     <div class="list-section">
-        <h2>Add Your Own Items</h2>
-        <div id="custom-items-container">
-            </div>
-        <button class="add-item-btn" onclick="addCustomItem()">➕ Add Custom Item</button>
+        <h2 style="font-size: 1.2em; margin-top: 0;">➕ Add Extra Items</h2>
+        <div id="custom-items-container"></div>
+        <button class="add-item-btn" onclick="addCustomItem()">Add Custom Item</button>
     </div>
 
-    <div class="email-section">
-        <label for="email-recipient">Recipient Email Address:</label>
-        <input type="email" id="email-recipient" placeholder="name@example.com">
-
-        <div class="action-buttons">
-            <button id="email-list-btn" onclick="emailList()">📧 Email Grocery List</button>
-            <button id="clear-list-btn" onclick="clearList()">🔄 Clear List</button>
-        </div>
-
-        <a id="amazon-link-btn" href="https://amzn.to/479D0aJ" target="_blank" role="button">
-            🛒 Shop Amazon Groceries
-        </a>
-    </div>
+    <button class="clear-btn" onclick="clearList()">🔄 Reset List for Next Trip</button>
 </div>
 
 <script>
-    // 💡 UPDATED DATA STRUCTURE FOR CATEGORIZATION
     const POPULAR_ITEMS = [
         { name: "Apples", category: "Produce" },
         { name: "Bananas 🍌", category: "Produce" },
@@ -232,37 +155,29 @@
         { name: "Potatoes", category: "Produce" },
         { name: "Tomatoes", category: "Produce" },
         { name: "Oranges", category: "Produce" },
-        
         { name: "Butter", category: "Dairy/Refrigerated" },
         { name: "Cheese", category: "Dairy/Refrigerated" },
         { name: "Eggs 🥚", category: "Dairy/Refrigerated" },
         { name: "Milk 🥛", category: "Dairy/Refrigerated" },
         { name: "Yogurt", category: "Dairy/Refrigerated" },
-
-        { name: "Chicken Breast", category: "Meat/Seafood" },
-        { name: "Ground Beef", category: "Meat/Seafood" },
-        { name: "Steak 🥩", category: "Meat/Seafood" },
-        
+        { name: "Chicken Breast", category: "Meat" },
+        { name: "Ground Beef", category: "Meat" },
+        { name: "Steak 🥩", category: "Meat" },
         { name: "Bread 🍞", category: "Bakery/Cereal" },
         { name: "Cereal", category: "Bakery/Cereal" },
-
         { name: "Coffee ☕", category: "Pantry" },
         { name: "Pasta", category: "Pantry" },
         { name: "Rice", category: "Pantry" },
         { name: "Salt", category: "Pantry" },
         { name: "Sugar", category: "Pantry" },
-
-        { name: "Dish Soap", category: "Household/Other" },
-        { name: "Garbage Bags", category: "Household/Other" },
-        { name: "Paper Towels", category: "Household/Other" },
-        { name: "Toilet Paper", category: "Household/Other" }
+        { name: "Dish Soap", category: "Household" },
+        { name: "Garbage Bags", category: "Household" },
+        { name: "Paper Towels", category: "Household" },
+        { name: "Toilet Paper", category: "Household" }
     ];
 
     const popularListContainer = document.getElementById('popular-items-list');
     const customContainer = document.getElementById('custom-items-container');
-    const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    // --- INITIALIZATION AND LOCAL STORAGE ---
 
     document.addEventListener('DOMContentLoaded', () => {
         renderPopularItems();
@@ -270,28 +185,19 @@
         attachEventListeners();
     });
 
-    // Helper to strip emojis and trim for clean comparison/sorting
     const cleanName = (s) => s.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
 
-    // Generate HTML for the popular items, grouped by category
     function renderPopularItems() {
         popularListContainer.innerHTML = '';
         const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
-
-        // 1. Group items by category
         const categorizedItems = POPULAR_ITEMS.reduce((acc, item) => {
             acc[item.category] = acc[item.category] || [];
             acc[item.category].push(item);
             return acc;
         }, {});
 
-        // 2. Sort categories alphabetically
-        const sortedCategories = Object.keys(categorizedItems).sort();
-
-        // 3. Render
-        sortedCategories.forEach(category => {
-            // Create Category Header
-            const header = document.createElement('h3');
+        Object.keys(categorizedItems).sort().forEach(category => {
+            const header = document.createElement('div');
             header.className = 'category-header';
             header.textContent = category;
             popularListContainer.appendChild(header);
@@ -299,153 +205,58 @@
             const ul = document.createElement('ul');
             ul.className = 'item-list';
 
-            // Sort items within each category alphabetically
             categorizedItems[category].sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name)));
 
             categorizedItems[category].forEach(item => {
                 const itemCleanName = cleanName(item.name);
-                const id = `item-${itemCleanName.replace(/\s/g, '-')}`;
                 const isChecked = savedChecks[itemCleanName] ? 'checked' : '';
-                
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <label>
-                        <input type="checkbox" id="${id}" value="${itemCleanName}" ${isChecked}>
+                    <label style="display: flex; align-items: center; width: 100%;">
+                        <input type="checkbox" value="${itemCleanName}" ${isChecked}>
                         <span>${item.name}</span>
-                    </label>
-                `;
+                    </label>`;
                 ul.appendChild(li);
             });
             popularListContainer.appendChild(ul);
         });
     }
     
-    // Load and render custom items from local storage
     function loadCustomItems() {
         const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; 
-
         customContainer.innerHTML = '';
-        
-        savedCustom.forEach(value => addCustomItem(value, false)); // Don't autofocus on load
-        if (savedCustom.length === 0) {
-            addCustomItem();
-        }
+        savedCustom.forEach(value => addCustomItem(value, false));
     }
     
-    // --- EVENT LISTENERS AND STORAGE HANDLERS ---
-    
     function attachEventListeners() {
-        popularListContainer.addEventListener('change', (event) => {
-            if (event.target.type === 'checkbox') {
-                savePopularItems();
-            }
+        popularListContainer.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') savePopularItems();
         });
-
         customContainer.addEventListener('input', saveCustomItems);
     }
     
     function savePopularItems() {
         const checks = {};
-        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checks[checkbox.value] = checkbox.checked;
-        });
+        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(c => checks[c.value] = c.checked);
         localStorage.setItem('popularChecks', JSON.stringify(checks));
     }
     
     function saveCustomItems() {
-        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
-            .map(input => input.value.trim());
-        localStorage.setItem('customItems', JSON.stringify(customItems));
+        const items = Array.from(customContainer.querySelectorAll('input[type="text"]')).map(i => i.value.trim());
+        localStorage.setItem('customItems', JSON.stringify(items));
     }
 
-    // --- DYNAMIC CUSTOM ITEM FUNCTIONALITY ---
-
-    // 💡 IMPLEMENTED AUTOFOCUS FEATURE
     function addCustomItem(value = '', autofocus = true) {
         const row = document.createElement('div');
         row.className = 'custom-item-row';
-        
         const input = document.createElement('input');
         input.type = 'text';
         input.value = value;
-        input.placeholder = "Enter item name";
-        row.appendChild(input);
-
+        input.placeholder = "Item name...";
         const removeBtn = document.createElement('button');
-        removeBtn.textContent = 'X';
-        removeBtn.onclick = () => {
-            row.remove();
-            saveCustomItems();
-        };
-        
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => { row.remove(); saveCustomItems(); };
+        row.appendChild(input);
         row.appendChild(removeBtn);
-        customContainer.appendChild(row);
-        
-        if (autofocus && value === '') {
-            input.focus(); // Autofocus on the new, empty input field
-        }
-    }
-    
-    // --- CLEAR AND EMAIL ACTIONS ---
-
-    function clearList() {
-        if (!confirm("Are you sure you want to clear the entire list (checkboxes and custom items)?")) {
-            return;
-        }
-
-        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
-        
-        customContainer.innerHTML = '';
-        addCustomItem();
-
-        localStorage.removeItem('popularChecks');
-        localStorage.removeItem('customItems');
-        
-        savePopularItems(); 
-        saveCustomItems();
-        
-        alert('List cleared!');
-    }
-
-
-    function emailList() {
-        const emailInput = document.getElementById('email-recipient');
-        const recipient = emailInput.value.trim();
-
-        // 💡 IMPLEMENTED EMAIL VALIDATION
-        if (!recipient || !EMAIL_REGEX.test(recipient)) {
-            alert('Please enter a valid email address (e.g., name@example.com).');
-            emailInput.focus();
-            return;
-        }
-
-        const popularItems = Array.from(popularListContainer.querySelectorAll('input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
-
-        const customItems = Array.from(customContainer.querySelectorAll('input[type="text"]'))
-            .map(input => input.value.trim())
-            .filter(item => item !== '');
-
-        const allItems = [...popularItems, ...customItems];
-
-        if (allItems.length === 0) {
-            alert('Your list is empty! Please select or add some items before emailing.');
-            return;
-        }
-
-        const listItemsText = allItems.map((item, index) => `${index + 1}. ${item}`).join('\n');
-        
-        const emailSubject = 'My Weekly Grocery List';
-        // 💡 HEART EMOJI ADDED
-        const emailBody = `Here is the grocery list:\n\n${listItemsText}\n\nHappy Shopping! ❤️`;
-        
-        const mailtoLink = `mailto:${recipient}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
-        
-        window.location.href = mailtoLink;
-    }
-</script>
-
-</body>
-</html>
+        customContainer.appendChild(
