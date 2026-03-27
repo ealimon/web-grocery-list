@@ -63,7 +63,6 @@
             cursor: pointer;
         }
 
-        /* Readable Check: Blue & Bold when selected */
         .item-list input[type="checkbox"]:checked + span {
             color: #1a73e8;
             font-weight: 600;
@@ -146,7 +145,6 @@
 </div>
 
 <script>
-    // 💡 THE FULL RESTORED LIST
     const POPULAR_ITEMS = [
         { name: "Apples", category: "Produce" },
         { name: "Bananas 🍌", category: "Produce" },
@@ -170,11 +168,12 @@
         { name: "Pasta", category: "Pantry" },
         { name: "Rice", category: "Pantry" },
         { name: "Salt", category: "Pantry" },
-        { name: "Sugar", category: "Pantry" },
-        { name: "Dish Soap", category: "Household" },
+        { name: "Bottled Water 💧", category: "Pantry" },
         { name: "Garbage Bags", category: "Household" },
         { name: "Paper Towels", category: "Household" },
-        { name: "Toilet Paper", category: "Household" }
+        { name: "Toilet Paper", category: "Household" },
+        { name: "Soap Bar 🧼", category: "Household" },
+        { name: "Toothpaste 🪥", category: "Household" }
     ];
 
     const popularListContainer = document.getElementById('popular-items-list');
@@ -206,7 +205,6 @@
             const ul = document.createElement('ul');
             ul.className = 'item-list';
 
-            // Sorting A-Z within the category
             categorizedItems[category].sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name)));
 
             categorizedItems[category].forEach(item => {
