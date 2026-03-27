@@ -63,7 +63,7 @@
             cursor: pointer;
         }
 
-        /* 💡 Clean Readability: No Strikethrough, just a subtle color change */
+        /* Readable Check: Blue & Bold when selected */
         .item-list input[type="checkbox"]:checked + span {
             color: #1a73e8;
             font-weight: 600;
@@ -146,6 +146,7 @@
 </div>
 
 <script>
+    // 💡 THE FULL RESTORED LIST
     const POPULAR_ITEMS = [
         { name: "Apples", category: "Produce" },
         { name: "Bananas 🍌", category: "Produce" },
@@ -176,87 +177,4 @@
         { name: "Toilet Paper", category: "Household" }
     ];
 
-    const popularListContainer = document.getElementById('popular-items-list');
-    const customContainer = document.getElementById('custom-items-container');
-
-    document.addEventListener('DOMContentLoaded', () => {
-        renderPopularItems();
-        loadCustomItems();
-        attachEventListeners();
-    });
-
-    const cleanName = (s) => s.replace(/[\uD800-\uDBFF\uDC00-\uDFFF\u2600-\u26FF\u2700-\u27BF]/g, '').trim();
-
-    function renderPopularItems() {
-        popularListContainer.innerHTML = '';
-        const savedChecks = JSON.parse(localStorage.getItem('popularChecks')) || {};
-        const categorizedItems = POPULAR_ITEMS.reduce((acc, item) => {
-            acc[item.category] = acc[item.category] || [];
-            acc[item.category].push(item);
-            return acc;
-        }, {});
-
-        Object.keys(categorizedItems).sort().forEach(category => {
-            const header = document.createElement('div');
-            header.className = 'category-header';
-            header.textContent = category;
-            popularListContainer.appendChild(header);
-
-            const ul = document.createElement('ul');
-            ul.className = 'item-list';
-
-            categorizedItems[category].sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name)));
-
-            categorizedItems[category].forEach(item => {
-                const itemCleanName = cleanName(item.name);
-                const isChecked = savedChecks[itemCleanName] ? 'checked' : '';
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <label style="display: flex; align-items: center; width: 100%;">
-                        <input type="checkbox" value="${itemCleanName}" ${isChecked}>
-                        <span>${item.name}</span>
-                    </label>`;
-                ul.appendChild(li);
-            });
-            popularListContainer.appendChild(ul);
-        });
-    }
-    
-    function loadCustomItems() {
-        const savedCustom = JSON.parse(localStorage.getItem('customItems')) || [""]; 
-        customContainer.innerHTML = '';
-        savedCustom.forEach(value => addCustomItem(value, false));
-    }
-    
-    function attachEventListeners() {
-        popularListContainer.addEventListener('change', (e) => {
-            if (e.target.type === 'checkbox') savePopularItems();
-        });
-        customContainer.addEventListener('input', saveCustomItems);
-    }
-    
-    function savePopularItems() {
-        const checks = {};
-        popularListContainer.querySelectorAll('input[type="checkbox"]').forEach(c => checks[c.value] = c.checked);
-        localStorage.setItem('popularChecks', JSON.stringify(checks));
-    }
-    
-    function saveCustomItems() {
-        const items = Array.from(customContainer.querySelectorAll('input[type="text"]')).map(i => i.value.trim());
-        localStorage.setItem('customItems', JSON.stringify(items));
-    }
-
-    function addCustomItem(value = '', autofocus = true) {
-        const row = document.createElement('div');
-        row.className = 'custom-item-row';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = value;
-        input.placeholder = "Item name...";
-        const removeBtn = document.createElement('button');
-        removeBtn.className = 'remove-btn';
-        removeBtn.textContent = '✕';
-        removeBtn.onclick = () => { row.remove(); saveCustomItems(); };
-        row.appendChild(input);
-        row.appendChild(removeBtn);
-        customContainer.appendChild(
+    const popularListContainer =
